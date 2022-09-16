@@ -18,6 +18,22 @@ from model import saveToFile, loadFromFile
 from generator import MultiChannelImageDataGenerator
 
 
+import neptune.new as neptune
+from neptune.new.integrations.tensorflow_keras import NeptuneCallback
+import os
+assert os.path.isfile(os.path.expanduser('~/.neptoken'))
+# import neptune.new as neptune
+
+api_token = open(os.path.expanduser('~/.neptoken')).read().rstrip()
+
+run = neptune.init(
+    project="suredream/eurosat-vgg",
+    api_token=api_token,
+)  # your credentials
+
+# Create a NeptuneCallback instance
+neptune_cbk = NeptuneCallback(run=run, base_namespace="metrics")
+
 class Train:
 
     def __init__( self, args ):
@@ -96,7 +112,7 @@ class Train:
                                 metrics=[ 'categorical_accuracy' ] )
                                 
         # setup callbacks
-        callbacks = [ CSVLogger( 'log.csv', append=True ) ]
+        callbacks = [neptune_cbk, CSVLogger( 'log.csv', append=True ) ]
         if args.checkpoint_path is not None:
 
             # create sub-directory if required
@@ -128,6 +144,18 @@ class Train:
                                     'validation_accuracy'] )
 
         history = self._model.history
+
+
+
+        params = {"learning_rate": 1e-6, "optimizer": "Adam"}
+        run["parameters"] = params
+
+        # for epoch in range(10):
+        #     run["train/loss"].log(0.9 ** epoch)
+
+        # run["eval/f1_score"] = 0.66
+
+        
         for idx in range( len(history.epoch) ):
 
             # compile results into list
@@ -136,7 +164,11 @@ class Train:
                                 'train_accuracy' : history.history[ 'categorical_accuracy' ][ idx ],
                                 'validation_loss' : history.history[ 'val_loss' ][ idx ],
                                 'validation_accuracy' : history.history[ 'val_categorical_accuracy' ][ idx ] }, ignore_index=True )
-
+            # run["train/loss"].log(history.history[ 'loss' ][ idx ])
+            # run["train/accuracy"].log(history.history[ 'categorical_accuracy' ][ idx ])
+            # run["validation/loss"].log(history.history[ 'val_loss' ][ idx ])
+            # run["validation_accuracy"].log(history.history[ 'val_categorical_accuracy' ][ idx ])
+        # run.stop()
         # write results to file
         pathname = os.path.join( args.data_path, 'results-{}.csv'.format ( time.strftime("%Y%m%d-%H%M%S") ) )
         df.to_csv( pathname, index=False)
@@ -271,6 +303,7 @@ def main():
     # create and execute training instance
     obj = Train( args )
     obj.process( args )
+    run.stop()
 
     return
 

@@ -5,3 +5,5 @@ vgg16*
 **/__pycache__/
 log.csv
 eurosat/
+.neptune/
+tmp/
