@@ -7,8 +7,8 @@ import numpy as np
 
 # one hot encoder
 from skimage.io import imread
-from keras.utils import to_categorical
-
+# from keras.utils import to_categorical
+from tensorflow.keras.utils import to_categorical
 
 class Eurosat:
 

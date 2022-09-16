@@ -12,7 +12,7 @@ from keras.models import model_from_json
 
 # keras apps
 from keras.applications.vgg16 import VGG16
-from keras.applications.resnet50 import ResNet50
+from keras.applications.resnet import ResNet50
 
 
 def getVgg16( in_shape, layers ):

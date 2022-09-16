@@ -4,9 +4,8 @@ import argparse
 import pandas as pd
 
 # keras optimisers
-from keras.optimizers import SGD
-from keras.optimizers import Adam
-
+from tensorflow.keras.optimizers import SGD
+from tensorflow.keras.optimizers import Adam
 # callbacks
 from keras.callbacks import CSVLogger
 from keras.callbacks import EarlyStopping
