@@ -37,10 +37,9 @@ clone () {
 }
 sync () {
     # url=$token@$github$1.git
-    echo "${@:2}"
     git pull
-    git add .
-    git commit -m "${@:2}"
+    git add -u
+    git commit -m "${@:1}"
     git push # $url
 }
 __ () {
