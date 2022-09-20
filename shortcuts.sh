@@ -36,11 +36,11 @@ clone () {
     git clone $url tmp && mv tmp/.git . && rm -rf tmp && git reset --hard
 }
 sync () {
-    #url=$token@$github$1.git
-    echo "${@:1}"
+    # url=$token@$github$1.git
+    echo "${@:2}"
     git pull
     git add .
-    git commit -m "${@:1}"
+    git commit -m "${@:2}"
     git push # $url
 }
 __ () {
